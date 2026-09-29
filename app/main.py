@@ -9,6 +9,7 @@ from app.api import audit, auth, departments_admin, maintenance, metrics, roles,
 from app.core.errors import DomainError
 from app.database import close_connection, init_db
 from app.routers import affairs, announcements, departments, petitions, residents
+from app.birding.router import router as birding_router
 from app.seismic.router import router as seismic_router
 from app.seismic.service import ensure_schema as ensure_seismic_schema
 from app.compute.router import router as compute_router
@@ -19,6 +20,8 @@ async def lifespan(app: FastAPI):
     del app
     init_db()
     ensure_seismic_schema()
+    from app.birding.service import ensure_schema as ensure_birding_schema
+    ensure_birding_schema()
     yield
     close_connection()
 
@@ -51,6 +54,7 @@ app.include_router(departments.router)
 app.include_router(petitions.router)
 app.include_router(seismic_router)
 app.include_router(compute_router)
+app.include_router(birding_router)
 
 
 @app.get("/")
